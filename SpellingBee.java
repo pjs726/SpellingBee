@@ -8,6 +8,8 @@
 import edu.willamette.cs1.spellingbee.SpellingBeeGraphics;
 import java.awt.Color;
 import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class SpellingBee {
 
@@ -49,7 +51,47 @@ public class SpellingBee {
     }
 
     private void solveAction() {
-        sbg.showMessage("solveAction is not yet implemented", Color.RED);
+        ArrayList<String> dictionary = readDictionary(ENGLISH_DICTIONARY);
+        dictionary.forEach((word)->testWord(word));
+    }
+
+    private ArrayList<String> readDictionary(String name) {
+        ArrayList<String> output = new ArrayList<String>();
+        try {
+            File dictFile = new File(name);
+            Scanner reader = new Scanner(dictFile);
+            while (reader.hasNextLine()) {
+                String wordFromDic = reader.nextLine();
+                output.add(wordFromDic);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+        }
+
+        return output;
+    }
+
+    private void testWord(String word) {
+        String beehiveLetters = sbg.getBeehiveLetters();
+        
+        /* Check length requirement */
+        if (word.length() < 4)
+            return;
+
+        /* Ensure word contains center letter */
+        word = word.toUpperCase();
+        if (!word.contains("" + beehiveLetters.charAt(0)))
+            return;
+
+        /* Ensure all characters in word are beehive letters */
+        for (int i = 0; i < word.length(); i++)
+        {
+            if (!beehiveLetters.contains("" + word.charAt(i))) {
+                return;
+            }
+        }
+
+        sbg.addWord(word);
     }
 
 /* Constants */
