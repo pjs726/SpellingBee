@@ -15,6 +15,8 @@ public class SpellingBee {
 
     public void run() {
         sbg = new SpellingBeeGraphics();
+        score = 0;
+        wordCount = 0;
         sbg.addField("Puzzle", (s) -> puzzleAction(s));
         sbg.addButton("Solve", (s) -> solveAction());
     }
@@ -52,7 +54,13 @@ public class SpellingBee {
 
     private void solveAction() {
         ArrayList<String> dictionary = readDictionary(ENGLISH_DICTIONARY);
-        dictionary.forEach((word)->testWord(word));
+        dictionary.forEach((word) -> {
+            int output = testWord(word);
+            if (output > 0) {
+                score += output;
+                wordCount++;
+            }});
+        sbg.showMessage(wordCount + " words; " + score + " points");
     }
 
     private ArrayList<String> readDictionary(String name) {
@@ -71,27 +79,44 @@ public class SpellingBee {
         return output;
     }
 
-    private void testWord(String word) {
+    private int testWord(String word) {
+        int scoreVal = 0;   
         String beehiveLetters = sbg.getBeehiveLetters();
         
         /* Check length requirement */
         if (word.length() < 4)
-            return;
+            return 0;
 
         /* Ensure word contains center letter */
         word = word.toUpperCase();
         if (!word.contains("" + beehiveLetters.charAt(0)))
-            return;
+            return 0;
 
-        /* Ensure all characters in word are beehive letters */
-        for (int i = 0; i < word.length(); i++)
-        {
+        /* Ensure all characters in word are beehive letters
+            and determine if bonus needed */
+        HashSet<Character> bonusSet = new HashSet<Character>();
+        for (int i = 0; i < word.length(); i++) {
             if (!beehiveLetters.contains("" + word.charAt(i))) {
-                return;
+                return 0;
             }
+            bonusSet.add(word.charAt(i));
         }
 
-        sbg.addWord(word);
+
+        /* Adjust score and print prettily */
+        if (word.length() == 4)
+            scoreVal += 1; 
+        else 
+            scoreVal += word.length();
+        if (bonusSet.size() == 7) {
+            scoreVal += 7;
+            sbg.addWord(word + " (" + scoreVal + ")", Color.BLUE);
+        }
+        else {
+            sbg.addWord(word + " (" + scoreVal + ")");
+        }
+
+        return scoreVal;
     }
 
 /* Constants */
@@ -101,6 +126,8 @@ public class SpellingBee {
 /* Private instance variables */
 
     private SpellingBeeGraphics sbg;
+    private int score;
+    private int wordCount;
 
 /* Startup code */
 
