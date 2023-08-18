@@ -29,7 +29,6 @@ public class SpellingBee {
         }
 
         HashSet<Character> charSet = new HashSet<Character>();
-        String temp = "";
 
         for (int i = 0; i < s.length(); i++) {
             /* Check to see if input character is a letter. */
@@ -44,12 +43,9 @@ public class SpellingBee {
                 return; 
             }
             charSet.add(s.charAt(i));
-
-            
-            temp += s.charAt(i);
         }
         sbg.showMessage("");
-        sbg.setBeehiveLetters(temp);
+        sbg.setBeehiveLetters(s);
     }
 
     private void solveAction() {
